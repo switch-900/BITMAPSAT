@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{ADD YOUR TITLE HERE}</title>
+    <meta id="header-icon" content="/content/{ADD YOUR HEADER IMAGE HERE}">
+    <meta id="footer-logo" content="/content/{ADD YOUR FOOTER LOGO HERE}">
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        // Set bitmap number
+        window.BM = "{ADD YOUR BITMAP NUMBER HERE}";
+        (function() {
+            // Helper function to run the inscription code
+            function runInscription(code) {
+                try {
+                    // Create a new script element and run it
+                    const script = document.createElement('script');
+                    script.innerHTML = code;
+                    document.body.appendChild(script);
+                } catch (error) {
+                    console.error('Failed to execute inscription:', error);
+                }
+            }
+            window.onload = async function() {
+                try {
+                    const response = await fetch("/r/children/5f497d205d95c92aa9a0f75a79263e0730d604e46cef9db8c2cadd8ee606e7f2i0");//KEEP THIS ID AS IS
+                    const data = await response.json();
+                    if (!data.ids || !data.ids.length) throw new Error('No children found');
+                    const inscriptionId = data.ids[data.ids.length - 1];
+                    console.log('Loading inscription:', inscriptionId);
+                    const content = await fetch(`/content/${inscriptionId}`);
+                    if (!content.ok) throw new Error('Failed to fetch content');
+                    const code = await content.text();
+                    runInscription(code);
+                } catch (error) {
+                    console.error('Failed to load inscription:', error);
+                    // If fetch fails, check if we have the inscription code directly in the page
+                    if (typeof inscriptionScript !== 'undefined') {
+                        console.log('Using embedded inscription code');
+                        runInscription(inscriptionScript);
+                    }
+                }
+            };
+        })();
+    </script>
+</body>
+</html>
